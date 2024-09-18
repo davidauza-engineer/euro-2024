@@ -104,3 +104,58 @@ show_body_part_pie_chart(body_parts_count)
 You should see a pie chart after the execution of the code above ^
 
 ![Goals per body part](assets/Figure_1.png)
+
+---
+
+Next, we looked at goals scored by players based on their jersey numbers. Do players with certain 
+numbers tend to score more goals? Let's find out.
+
+Preparing the functions
+
+
+```python
+def get_jerseys_numbers_by_event(events, players, event_type):
+    """Return a simple list of jersey numbers corresponding to events of specified event_type"""
+    
+    selected_events = filter_events_by_type(events, event_type)
+    
+    # Helper function to find a player by ID and return his number
+    def jersey_num_by_id(player_id):
+        return find_player_by_id(players, player_id)['jersey_namber']
+    
+    return [jersey_num_by_id(i['primary_id_person']) for i in selected_events]
+
+def plot_jerseys_numbers_histogram(jerseys_list, data_label, data_color):
+    """Plot the jersey histogram based on 'jerseys_list' data"""
+    MAX_JERSEY_NUMBER = 26
+    _, bins, _ = plt.hist(
+        jerseys_list,
+        bins=np.arange(MAX_JERSEY_NUMBER + 2) - 0.5,
+        label=data_label,
+        edgecolor='black',
+        color=data_color,
+        alpha=0.5
+    )
+    plt.xticks(0.5 * (bins[1:-1] + bins[2:])) # Make sure all numbers are labeled on x-axis
+    plt.legend()
+```
+
+Running the functions and displaying the histogram
+
+
+```python
+goals_jerseys = get_jerseys_numbers_by_event(events, players, 'GOAL')
+cards_jerseys = get_jerseys_numbers_by_event(events, players, 'YELLOW_CARD')
+
+plt.subplot(2, 1, 1) # Top plot
+plt.title('Events by jersey number')
+plot_jerseys_numbers_histogram(goals_jerseys, 'Goals', 'lightgreen')
+
+plt.subplot(2, 1, 2) # Bottom plot
+plt.xlabel('Jersey number')
+plot_jerseys_numbers_histogram(cards_jerseys, 'Yellow cards', 'yellow')
+
+plt.show()
+```
+
+![Events by jersey number](assets/Figure_2.png)
